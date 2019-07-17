@@ -1,2 +1,0 @@
-# Sonar-Exporter
-Sonar Exporter
