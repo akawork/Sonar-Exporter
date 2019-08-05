@@ -1,36 +1,36 @@
-Sonar Exporter
+## Sonar Exporter
 
 Sonar exporter for Prometheus to deploy on FSOFT environment.
-This exporter have written in python3.6.
+This exporter has written in python3.6.
 
-Usage:
+*Sonar version 6.7.5.38563*
 
-1. Download newest version of sonar_exporter-?.tar.gz
-2. Build image:
-   
-   2.1. Install docker:
-      - [Install Docker on macOS](https://runnable.com/docker/install-docker-on-macos)
-      - [Install Docker on Windows 10](https://runnable.com/docker/install-docker-on-windows-10)
-      - [Install Docker on Linux](https://runnable.com/docker/install-docker-on-linux)
+## Usage:
 
-   2.2. Load docker image:
-      ```sh
-      $ docker load -i sonar_exporter-?.tar.gz
-      ```
-3. Run sonar Exporter by docker:
-   ```sh
-   $ docker run -p 9119:9119 -d sonar_exporter \
-     [-s --server <sonar server url>] \
-     [--user <sonar username>] \
-     [--passwd <sonar password>] \
-     [-p --port <display metrics port>]
-   ```
+### Step 1: Build image
 
-   - docker
-      - `-p`: connect docker port to real port
-      - `-d`: run as a process
-   - sonar_exporter
-      - `-s --server`: targer sonar server
-      - `--user`: username for authentication
-      - `--passwd`: password for authentication
-      - `p --port`: port to display metrics
+```sh
+docker build -t sonar_exporter .
+```
+
+### Step 2: Running Sonar exporter
+
+```sh
+docker run -p 9118:9118 --name sonar_exporter -d \
+-e "SONAR_SERVER=http://192.168.232.147:8080" \
+-e "SONAR_USERNAME=admin" \
+-e "SONAR_PASSWORD=123456" sonar_exporter
+```
+
+With:
+
+- SONAR_SERVER: is the url of sonar
+- SONAR_USERNAME: is the user of sonar who have permission to access sonar resource
+- SONAR_PASSWORD: is the password of user.
+
+### Using config file:
+```sh
+docker run -p 9118:9118 --name sonar_exporter -d \
+-v "/link/to/your/config/file.ini:/root/config.ini" \
+sonar_exporter
+```
