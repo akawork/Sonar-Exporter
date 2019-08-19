@@ -2,12 +2,23 @@
 
 USER_PAGE_SIZE = 500
 TASK_PAGE_SIZE = 999
-STATUS_LABELS_STR_GROUP = {'static': 'SUCCESS,FAILED,CANCELED',
-                    'dynamic': 'PENDING,IN_PROGRESS'}
+STATUS_LABELS_STR_GROUP = {
+    'static': 'SUCCESS,FAILED,CANCELED',
+    'dynamic': 'PENDING,IN_PROGRESS'
+}
 STATUS_LABELS_STR = STATUS_LABELS_STR_GROUP['static'] \
                 + STATUS_LABELS_STR_GROUP['dynamic']
-STATUS_LABELS_LIST_GROUP = {'static': ['SUCCESS','FAILED','CANCELED'],
-                    'dynamic': ['PENDING','IN_PROGRESS']}
+STATUS_LABELS_LIST_GROUP = {
+    'static': [
+        'SUCCESS',
+        'FAILED',
+        'CANCELED'
+    ],
+    'dynamic': [
+        'PENDING',
+        'IN_PROGRESS'
+    ]
+}
 STATUS_LABELS_LIST = STATUS_LABELS_LIST_GROUP['static'] \
                 + STATUS_LABELS_LIST_GROUP['dynamic']
 
@@ -16,8 +27,14 @@ class Administrator(object):
 
     def __init__(self, sonar):
         self.sonar = sonar
-        list_tasks, task_info, task_status = get_list_tasks(sonar)
-        list_users, user_info, list_groups, group_info = get_list_users(sonar)
+        list_tasks, \
+            task_info, \
+            task_status = get_list_tasks(sonar)
+        list_users, \
+            user_info, \
+            list_groups, \
+            group_info = get_list_users(sonar)
+
         self.list_tasks = list_tasks
         self.task_info = task_info
         self.task_status = task_status
@@ -90,23 +107,27 @@ class Administrator(object):
         group = self.get_group(gr_name)
         return group['users']
 
+
 # Get list tasks
 def get_list_tasks(sonar):
-    
+
     list_tasks = []
     task_info = {}
     task_status = {}
 
-    list_tasks_static, task_info_static, task_status_static = get_list_tasks_status(sonar, 'static')
-    list_tasks_dynamic, task_info_dynamic, task_status_dynamic = get_list_tasks_status(sonar, 'dynamic')
+    list_tasks_static, \
+        task_info_static, \
+        task_status_static = get_list_tasks_status(sonar, 'static')
+    list_tasks_dynamic, \
+        task_info_dynamic, \
+        task_status_dynamic = get_list_tasks_status(sonar, 'dynamic')
 
-    list_tasks = list_tasks_static 
+    list_tasks = list_tasks_static
     list_tasks += list_tasks_dynamic
     task_info = task_info_static
     task_info.update(task_info_dynamic)
     task_status = task_status_static
     task_status.update(task_status_dynamic)
-    
 
     return list_tasks, task_info, task_status
 
@@ -119,7 +140,10 @@ def get_list_tasks_status(sonar, status_group):
     task_status = {}
 
     for status in STATUS_LABELS_LIST_GROUP[status_group]:
-        task_status[status] = {'total': 0, 'tasks': []}
+        task_status[status] = {
+            'total': 0,
+            'tasks': []
+        }
 
     api = '/api/ce/activity'
     status_components = STATUS_LABELS_STR_GROUP[status_group]
@@ -128,7 +152,11 @@ def get_list_tasks_status(sonar, status_group):
     else:
         only_currents = 'false'
 
-    params = {'ps': TASK_PAGE_SIZE, 'status': status_components, 'onlyCurrents': only_currents}
+    params = {
+        'ps': TASK_PAGE_SIZE,
+        'status': status_components,
+        'onlyCurrents': only_currents
+    }
     url = sonar.server + api
 
     response = sonar.req.do_get(url, params=params)
@@ -145,8 +173,9 @@ def get_list_tasks_status(sonar, status_group):
         task_info[task_id] = new_task
         task_status[new_task['status']]['total'] += 1
         task_status[new_task['status']]['tasks'].append(task_id)
-    
+
     return list_tasks, task_info, task_status
+
 
 def standardize_task_info(task, collector):
 
@@ -154,16 +183,22 @@ def standardize_task_info(task, collector):
 
     new_task['id'] = task['id']
     new_task['type'] = task['type']
-    new_task['component_id'] = task['componentId'] if 'componentId' in task else 'N/A'
-    new_task['component_key'] = task['componentKey'] if 'componentKey' in task else 'N/A'
-    new_task['component_name'] = task['componentName'] if 'componentName' in task else 'N/A'
-    new_task['component_qualifier'] = task['componentQualifier'] if 'componentQualifier' in task else 'N/A'
+    new_task['component_id'] = task['componentId'] \
+        if 'componentId' in task else 'N/A'
+    new_task['component_key'] = task['componentKey'] \
+        if 'componentKey' in task else 'N/A'
+    new_task['component_name'] = task['componentName'] \
+        if 'componentName' in task else 'N/A'
+    new_task['component_qualifier'] = task['componentQualifier'] \
+        if 'componentQualifier' in task else 'N/A'
     new_task['status'] = task['status']
     if 'executionTimeMs' in task:
         new_task['execution_time'] = task['executionTimeMs'] / 1000
     else:
         new_task['execution_time'] = 0
+
     return new_task
+
 
 # Get list user and group
 def get_list_users(sonar):
@@ -188,11 +223,11 @@ def get_list_users(sonar):
     page_total = users_total // page_size
     if users_total % page_size > 0:
         page_total += 1
-    
+
     for page in range(page_total):
         p = page + 1
         params = {'ps': page_size, 'p': p}
-        
+
         response = sonar.req.do_get(url, params=params)
         if response.status_code != 200:
             continue
@@ -221,12 +256,14 @@ def get_list_users(sonar):
                     group_info[gr_name]['users'].append(user_id)
     return list_users, user_info, list_groups, group_info
 
+
 def standardize_user_info(user, sonar):
     new_user = {}
 
     new_user['id'] = user['login']
     new_user['name'] = user['name']
-    new_user['active'] = user['active']
+    new_user['active'] = user['active'] \
+        if 'active' in user else None
     if 'email' in user:
         new_user['email'] = user['email']
     else:

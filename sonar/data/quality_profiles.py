@@ -3,8 +3,11 @@ class QualityProfiles(object):
 
     def __init__(self, sonar):
         self.sonar = sonar
-        profiles, profile_info, languages, language_info = \
-            get_list_profiles(sonar)
+        profiles, \
+            profile_info, \
+            languages, \
+            language_info = get_list_profiles(sonar)
+
         self.list_profiles = profiles
         self.list_languages = languages
         self.profile_info = profile_info
@@ -12,7 +15,7 @@ class QualityProfiles(object):
 
     def get_list_profiles(self):
         return self.list_profiles
-    
+
     def get_total_profiles(self):
         return len(self.get_list_profiles())
 
@@ -31,6 +34,7 @@ class QualityProfiles(object):
     def get_language_total_profiles(self, lang_key):
         return self.language_info[lang_key]['total']
 
+
 def get_list_profiles(sonar):
 
     api = '/api/qualityprofiles/search'
@@ -48,6 +52,7 @@ def get_list_profiles(sonar):
     raw_data = response.json()
 
     list_profiles = raw_data['profiles']
+
     for profile in list_profiles:
         new_profile = standardize_profile_info(profile, sonar)
         profiles.append(new_profile['key'])
@@ -55,6 +60,7 @@ def get_list_profiles(sonar):
         lang = {}
         lang['key'] = profile['language']
         lang['name'] = profile['languageName']
+
         if lang['key'] in language_info:
             language_info[lang['key']]['total'] += 1
         else:
@@ -65,8 +71,9 @@ def get_list_profiles(sonar):
             language_info[lang['key']]['total'] = 1
             language_info[lang['key']]['profiles'] = []
         language_info[lang['key']]['profiles'].append(new_profile['key'])
-    
+
     return profiles, profile_info, languages, language_info
+
 
 def standardize_profile_info(profile, sonar):
 
@@ -75,6 +82,5 @@ def standardize_profile_info(profile, sonar):
     new_profile['key'] = profile['key']
     new_profile['name'] = profile['name']
     new_profile['language'] = profile['language']
-    
 
     return new_profile
