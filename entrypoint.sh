@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $SONAR_SERVER ]; then
-    sed -i "s~http://sonar_server:9000~$SONAR_SERVER~g" config.ini
+    sed -i "s~http://sonar_server~$SONAR_SERVER~g" config.ini
 fi
 
 if [ $SONAR_USERNAME ]; then
