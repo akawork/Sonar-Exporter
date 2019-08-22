@@ -1,5 +1,7 @@
 ## Sonar Exporter
 
+[![Build Status](https://travis-ci.com/hieupmse05244/Sonar-Exporter.svg?branch=master)](https://travis-ci.com/hieupmse05244/Sonar-Exporter)
+
 Sonar exporter is a exporter to get metrics of Sonar server, deployed on FSOFT environment.
 
 Sonar exporter has written in python3. It's tested in Sonar version 	6.7.5.38563
