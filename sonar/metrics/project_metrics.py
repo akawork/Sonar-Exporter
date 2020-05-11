@@ -35,4 +35,19 @@ def make_metrics(projects):
 
         list_metrics.append(metric)
 
+    # Measures
+    for measure in projects.measures_total.keys():
+        metric = GaugeMetricFamily(
+            'sonar_measures_{}'.format(measure.lower()),
+            '# of {} in Sonar'.format(measure),
+            labels=None
+        )
+
+        metric.add_metric(
+            labels=[],
+            value=projects.measures_total[measure]
+        )
+
+        list_metrics.append(metric)
+
     return list_metrics

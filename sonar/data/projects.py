@@ -3,6 +3,9 @@
 PROJECT_PAGE_SIZE = 500
 DEFAULT_TEMPLATE_ID = 'default_template'
 PROJECT_STATUS = ['ERROR', 'OK', 'WARN', 'NONE', 'ACCESS_DENIED']
+METRICS = 'coverage, bugs, vulnerabilities, code_smells, security_hotspots, ' \
+          'duplicated_lines_density'
+METRICS_IN_PERCENTAGE = ['coverage', 'duplicated_lines_density']
 
 
 class Projects(object):
@@ -12,11 +15,13 @@ class Projects(object):
 
         list_projects, \
             project_info, \
-            list_status = get_list_projects(sonar)
+            list_status, \
+            measures_total = get_list_projects(sonar)
 
         self.list_projects = list_projects
         self.project_info = project_info
         self.list_status = list_status
+        self.measures_total = measures_total
 
     def get_list_projects(self):
         return self.list_status
@@ -77,6 +82,8 @@ def get_list_projects(sonar):
     page_size = PROJECT_PAGE_SIZE
     page_total = projects_total // page_size
 
+    measures_total = {measure: 0 for measure in METRICS.replace(' ', '').split(',')}
+
     if projects_total % page_size > 0:
         page_total += 1
 
@@ -99,13 +106,16 @@ def get_list_projects(sonar):
             status = new_project['status']
             list_status[status]['total'] += 1
             list_status[status]['projects'].append(new_project['key'])
+            for key in measures_total.keys():
+                measures_total[key] += new_project['measures'][key]
 
-    return projects, project_info, list_status
+    for measure in METRICS_IN_PERCENTAGE:
+        measures_total[measure] /= projects_total
+
+    return projects, project_info, list_status, measures_total
 
 
 def standardize_project_info(project, sonar):
-
-    print(project)
 
     new_project = {}
     new_project['organization'] = project['organization']
@@ -135,5 +145,15 @@ def standardize_project_info(project, sonar):
     status = raw_data['projectStatus']['status']
 
     new_project['status'] = status
+
+    ## Measures
+    api = '/api/measures/search'
+    url = sonar.server + api
+
+    params = {'projectKeys': project_key, 'metricKeys': METRICS}
+    response = sonar.req.do_get(url=url, params=params)
+    raw_data = response.json()
+
+    new_project['measures'] = {data['metric']: float(data['value']) for data in raw_data['measures']}
 
     return new_project
