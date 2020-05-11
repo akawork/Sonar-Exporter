@@ -29,7 +29,7 @@ class Sonar(object):
 
 class SonarCollector(object):
 
-    def __init__(self, server, user, passwd, insecure=True):
+    def __init__(self, server, user, passwd, insecure=False):
         self.server = server
         self.insecure = insecure
         self.auth = (user, passwd)
