@@ -26,6 +26,9 @@ class Projects(object):
     def get_list_projects(self):
         return self.list_status
 
+    def get_projects_id_list(self):
+        return self.list_projects
+
     def get_total_projects(self):
         return len(self.list_projects)
 
