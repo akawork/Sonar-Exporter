@@ -5,7 +5,7 @@ def make_metrics(projects):
 
     list_metrics = []
 
-    # Total projects
+    # Total Projects
     metric = GaugeMetricFamily(
         'sonar_projects_total',
         'Total projects in Sonar',
@@ -19,7 +19,7 @@ def make_metrics(projects):
 
     list_metrics.append(metric)
 
-    # group metric status
+    # Group Metric Status
     list_status_label = projects.get_status_labels()
     for status in list_status_label:
         metric = GaugeMetricFamily(
@@ -32,6 +32,37 @@ def make_metrics(projects):
             labels=[],
             value=projects.get_total_status(status)
         )
+
+        list_metrics.append(metric)
+
+        # List of Projects
+        metric = GaugeMetricFamily(
+            'sonar_projects_list',
+            'List of Sonar Projects',
+            labels=None
+        )
+
+        metric.add_metric(
+            labels=[],
+            value=projects.get_list_projects()
+        )
+
+        list_metrics.append(metric)
+
+        # List of Projects Statuses
+        metric = GaugeMetricFamily(
+            'sonar_project_statuses_list',
+            'list of Project Statuses',
+            labels=['prj_id']
+        )
+
+        list_projects = projects.get_projects_id_list()
+
+        for prj_id in list_projects:
+            metric.add_metric(
+                labels=[prj_id],
+                value=projects.get_project_status(prj_id)
+            )
 
         list_metrics.append(metric)
 
