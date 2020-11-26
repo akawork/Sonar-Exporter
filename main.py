@@ -7,6 +7,10 @@ from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
 from sonar.sonar import SonarCollector
 
+
+PORT = int(os.environ.get('PORT', '9119'))
+
+
 if __name__ == "__main__":
     # Import configuration file
     config = configparser.ConfigParser()
@@ -18,8 +22,9 @@ if __name__ == "__main__":
     )
 
     REGISTRY.register(sonar_collector)
-    start_http_server(9119)
-    print('OK')
+    print('Starting on port:', PORT)
+    start_http_server(PORT)
+    print('HTTP server started')
 
     while True:
         time.sleep(1)

@@ -94,11 +94,11 @@ def get_list_projects(sonar):
         for project in components:
             new_project = standardize_project_info(project, sonar)
 
-            projects.append(new_project['id'])
-            project_info[new_project['id']] = new_project
+            projects.append(new_project['key'])
+            project_info[new_project['key']] = new_project
             status = new_project['status']
             list_status[status]['total'] += 1
-            list_status[status]['projects'].append(new_project['id'])
+            list_status[status]['projects'].append(new_project['key'])
 
     return projects, project_info, list_status
 
@@ -107,7 +107,6 @@ def standardize_project_info(project, sonar):
 
     new_project = {}
     new_project['organization'] = project['organization']
-    new_project['id'] = project['id']
     new_project['key'] = project['key']
     new_project['name'] = project['name']
     new_project['qualifier'] = project['qualifier']
@@ -126,7 +125,7 @@ def standardize_project_info(project, sonar):
     if 'errors' in raw_data:
         new_project['status'] = 'ACCESS_DENIED'
         return new_project
-        # apply_permission(sonar, project_id=project['id'])
+        # apply_permission(sonar, project_id=project['key'])
 
     response = sonar.req.do_get(url=url, params=params)
     raw_data = response.json()
