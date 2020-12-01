@@ -8,7 +8,7 @@ from prometheus_client.core import REGISTRY
 from sonar.sonar import SonarCollector
 
 
-PORT = int(os.environ.get('PORT', '9119'))
+PORT = int(os.environ.get('SONAR_EXPORTER_PORT', '9119'))
 
 
 if __name__ == "__main__":
