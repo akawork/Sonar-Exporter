@@ -106,7 +106,8 @@ def get_list_projects(sonar):
 def standardize_project_info(project, sonar):
 
     new_project = {}
-    new_project['organization'] = project['organization']
+    # Key 'organization' does not exist in Enterprise Edition Version 8.7 (build 41497)
+    # new_project['organization'] = project['organization']
     new_project['key'] = project['key']
     new_project['name'] = project['name']
     new_project['qualifier'] = project['qualifier']
