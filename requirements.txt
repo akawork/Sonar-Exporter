@@ -1,2 +1,4 @@
 prometheus-client==0.6.0
 requests==2.21.0
+uwsgi==2.0.20
+flask==2.0.2
