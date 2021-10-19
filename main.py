@@ -1,13 +1,10 @@
-import os
-import sys
-import time
 import configparser
 
+from prometheus_client import make_wsgi_app
 from prometheus_client.core import REGISTRY
-from sonar.sonar import SonarCollector
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from prometheus_client import make_wsgi_app
+from sonar.sonar import SonarCollector
 
 # Import configuration file
 config = configparser.ConfigParser()
