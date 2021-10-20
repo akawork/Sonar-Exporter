@@ -13,4 +13,4 @@ if [ $SONAR_PASSWORD ]; then
 fi
 
 # Run exporter
-/usr/local/bin/python main.py
+.local/bin/uwsgi --http 0.0.0.0:${SONAR_EXPORTER_PORT:-9119} --wsgi-file main.py --callable app
