@@ -42,7 +42,6 @@ class SystemInfo(object):
 
 
 def get_system_data(sonar):
-
     api = '/api/system/info'
     url = sonar.server + api
 
@@ -54,7 +53,7 @@ def get_system_data(sonar):
     response = sonar.req.do_get(url)
 
     if response.status_code != 200:
-        print(response.status_code)
+        print(f'Received non-200 status code while requesting {api} : {response.status_code} - {response.text}')
         return web, compute, search
 
     raw_data = response.json()
